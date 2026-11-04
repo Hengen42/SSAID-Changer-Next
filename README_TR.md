@@ -1,11 +1,15 @@
 # SSAID Changer Next ⚡ (Türkçe Rehber)
 
 <p align="center">
-  <img src="app/src/main/res/drawable/ic_app_logo.xml" width="96" height="96" alt="SSAID Changer Next Logo" />
+  <img src="assets/logo.svg" width="96" height="96" alt="SSAID Changer Next Logo" />
 </p>
 
 <p align="center">
-  <b>Modern, Hafif ve Root Destekli Android SSAID (Android ID) Yöneticisi &amp; Kimlik Değiştirme Aracı</b>
+  <b>Modern, Hafif ve Root Destekli Android SSAID (Android ID) Yöneticisi &amp; Değiştirici</b>
+</p>
+
+<p align="center">
+  <a href="README.md"><b>English Documentation</b></a> • <a href="README_TR.md"><b>Türkçe Dokümantasyon</b></a>
 </p>
 
 <p align="center">
@@ -19,14 +23,14 @@
 
 ## 📖 Genel Bakış
 
-**SSAID Changer Next**, root yetkisine sahip Android cihazlarda (KernelSU, Magisk, APatch) her bir uygulamanın kendine özel **SSAID** (Settings Secure Android ID) değerini görüntülemeyi, rastgele değiştirmeyi (spoof) ve dilediğiniz an orijinal fabrika haline geri döndürmeyi sağlayan açık kaynaklı bir Android uygulamasıdır.
+**SSAID Changer Next**, root yetkisine sahip Android cihazlarda (KernelSU, Magisk, APatch) yüklü uygulamaların kendine özel **SSAID** (Settings Secure Android ID) değerini görüntülemeyi, rastgele değiştirmeyi ve dilediğiniz an orijinal fabrika haline geri döndürmeyi sağlayan açık kaynaklı bir Android aracıdır.
 
-### ❓ Banka Uygulamaları Cihazı Nasıl Tanır ve Engeller?
-Türkiye'deki yerli bankacılık uygulamalarının (Yapı Kredi, Enpara, Garanti vb.) kullandığı **Codevo Octopus** gibi anti-tamper güvenlik sistemleri, cihazda root veya modifiye edilmiş bir sistem tespit ettiği anda o uygulamaya atanmış olan benzersiz **SSAID** kimliğini kendi sunucularına "Güvensiz Cihaz" olarak kaydeder.
+### ❓ Bazı Uygulamalar Cihazı Neden Engeller?
+Bazı uygulamalar (özellikle root veya sistem modifikasyonu tespiti yapıp girişi engelleyen ve Codevo Octopus gibi güvenlik SDK'ları kullanan uygulamalar), cihazda şüpheli bir ortam algıladıkları anda o uygulamaya ait benzersiz **SSAID** kimliğini kendi sunucularına "engelli/güvensiz" olarak kaydeder.
 
-Sonradan root'u gizleseniz, hatta uygulamayı silip baştan yükleseniz bile Android işletim sistemi uygulamaya aynı dosyadaki (`/data/system/users/0/settings_ssaid.xml`) sabit kimliği verir. Banka sunucusu bu kimliği tanıdığı için "güvenlik gerekçesiyle hizmet durduruldu" ekranını göstermeye devam eder.
+Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim sistemi uygulamaya aynı dosyadaki (`/data/system/users/0/settings_ssaid.xml`) sabit kimliği vermeye devam eder. Sunucu bu kimliği tanıdığı için engelleme sürer.
 
-**SSAID Changer Next ile o uygulamanın SSAID değeri değiştirildiğinde; banka sunucusu telefonunuzu yepyeni, ilk defa açılan tertemiz bir cihaz olarak algılar ve engeli kaldırır.**
+**SSAID Changer Next ile o uygulamanın SSAID değeri değiştirildiğinde; sunucu cihazı ilk defa açılan tertemiz bir cihaz olarak algılar ve engeli kaldırır.**
 
 ---
 
@@ -38,15 +42,25 @@ Sonradan root'u gizleseniz, hatta uygulamayı silip baştan yükleseniz bile And
 - 🛡️ **İki Kademeli Güvenli Yedekleme:**
   - **Uygulama Bazlı Orijinale Dönüş:** Her uygulamanın ilk fabrika kimliği saklanır; tek tıkla geri alınabilir.
   - **Tam Sistem Geri Yükleme:** İlk açılışta `.ssaidchanger.bak` olarak tam sistem yedeği alınır.
-- ⚠️ **Kritik Yeniden Başlatma Uyarısı:** Yeni SSAID verildikten sonra telefon yeniden başlatılmadan banka uygulamasının açılmasını engelleyen güvenlik uyarısı içerir.
 - 🔄 **Android 12 / 14 / 15 / 16 (ABX) Desteği:** `abx2xml` ve `xml2abx` araçlarıyla tam uyumlu çalışır.
+- 🔒 **Otomatik Girdi Ekleme:** Uygulama daha önce hiç açılmamışsa bile dosyaya geçerli XML düğümünü otomatik ekler (eski araçlardaki `NO_ENTRY` çökmesini önler).
+- 🧹 **İsteğe Bağlı Veri Temizliği:** Eski kimlik önbelleğini sıfırlamak için tek tıkla `pm clear` çalıştırabilir.
 
 ---
 
 ## ⚠️ Önemli Kullanım Uyarısı (Test Edilmiş Kritik Adım)
 
-> **DİKKAT:** Bir uygulamanın SSAID kimliğini değiştirdikten sonra **TELEFONU YENİDEN BAŞLATMADAN ÖNCE HEDEF BANKA UYGULAMASINI KESİNLİKLE AÇMAYIN!**  
-> Telefonu yeniden başlatmadan uygulamayı açarsanız, sistem henüz belleği sıfırlamadığı için yeni atadığınız SSAID de banka sunucusu tarafından hemen tespit edilip banlanacaktır. Değişiklikten sonra önce telefonu yeniden başlatın, açıldıktan sonra banka uygulamasına giriş yapın.
+> **DİKKAT:** Bir uygulamanın SSAID kimliğini değiştirdikten sonra **TELEFONU YENİDEN BAŞLATMADAN ÖNCE HEDEF UYGULAMAYI KESİNLİKLE AÇMAYIN!**  
+> Telefonu yeniden başlatmadan uygulamayı açarsanız, sistem henüz belleği sıfırlamadığı için yeni atadığınız SSAID de sunucu tarafından hemen tespit edilip kalıcı olarak banlanacaktır. Değişiklikten sonra önce telefonu yeniden başlatın (veya Hızlı Soft Reboot yapın), açıldıktan sonra hedef uygulamaya giriş yapın.
+
+---
+
+## 🙏 Teşekkürler & İlham Kaynağı
+Bu proje, [A7ALABS/ssaid-changer](https://github.com/A7ALABS/ssaid-changer) projesinin orijinal fikrinden esinlenerek geliştirilmiştir.
+
+Orijinal Flutter uygulaması SSAID düzenleme fikrini ilk kez ortaya koymuş olsa da; ABX dönüştürme hataları, eksik kayıt durumunda çökmesi (`NO_ENTRY`) ve çok sayıda uygulama yüklü cihazlarda ciddi arayüz donmaları gibi sorunlar barındırıyordu.
+
+**SSAID Changer Next**, tüm bilinen hataları ortadan kaldıran, modern yerel Android (Kotlin + Jetpack Compose) mimarisiyle sıfırdan kodlanmış, iki kademeli yedekleme sistemine sahip ve Android 12–16 sürümleriyle tam uyumlu yeni nesil bir çözümdür.
 
 ---
 
@@ -64,7 +78,7 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 Üretilen APK konumu:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.3.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.4.0.apk`
 
 ---
 

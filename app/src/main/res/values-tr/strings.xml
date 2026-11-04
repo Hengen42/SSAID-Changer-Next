@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">SSAID Changer Next</string>
     <string name="app_subtitle">Rootlu Android SSAID Yöneticisi</string>
-    <string name="version_format">v%1$s (Derleme %2$d)</string>
+    <string name="version_format">v%1$s</string>
+    <string name="root_status_ok">ROOT AKTİF</string>
+    <string name="root_status_no">ROOT YOK</string>
 
     <!-- Root Screen -->
     <string name="root_required_title">ROOT YETKİSİ GEREKLİ</string>
@@ -25,7 +27,7 @@
     <string name="new_ssaid_label">Yeni SSAID (16 Hex Karakter)</string>
     <string name="randomize_btn">Rastgele Üret</string>
     <string name="reload_btn">Yenile</string>
-    <string name="clear_data_checkbox">Uygulama verilerini de temizle (Banka uygulamaları için önerilir)</string>
+    <string name="clear_data_checkbox">Uygulama verilerini de temizle (ÖNERİLİR!!)</string>
     <string name="apply_spoofed_ssaid">YENİ SSAID KİMLİĞİNİ UYGULA</string>
     <string name="copied_to_clipboard">Panoya kopyalandı</string>
 
@@ -36,13 +38,15 @@
     <string name="tab_system_apps">Sistem</string>
     <string name="tab_all_apps">Tümü</string>
     <string name="modified_badge">DEĞİŞTİRİLDİ</string>
+    <string name="pull_to_refresh">Yenilemek için aşağı çekin</string>
 
     <!-- Restart Warning Dialog (Critical Tested Bug) -->
     <string name="restart_dialog_title">HEMEN YENİDEN BAŞLATMA ZORUNLU!</string>
     <string name="restart_dialog_warning_bold">YENİDEN BAŞLATMADAN ÖNCE HEDEF UYGULAMAYI KESİNLİKLE AÇMAYIN!</string>
-    <string name="restart_dialog_desc">Yeni SSAID sistem veritabanına başarıyla yazıldı.\n\nKRİTİK UYARI: Telefonu yeniden başlatmadan önce hedef banka uygulamasını açmaya çalışırsanız, Android eski önbellek durumunu gönderecek ve YENİ ATANAN SSAID DE ANINDA SUNUCU TARAFINDAN KARA LİSTEYE ALINIP BANLANACAKTIR!\n\nLütfen cihazınızı şimdi yeniden başlatın.</string>
+    <string name="restart_dialog_desc">Yeni SSAID sistem veritabanına başarıyla yazıldı.\n\nKRİTİK UYARI: Telefonu yeniden başlatmadan önce hedef uygulamayı açmaya çalışırsanız, Android eski önbellek durumunu gönderecek ve YENİ ATANAN SSAID DE ANINDA SUNUCU TARAFINDAN KARA LİSTEYE ALINIP BANLANACAKTIR!\n\nLütfen cihazınızı şimdi yeniden başlatın.</string>
     <string name="restart_now_btn">Telefonu Hemen Yeniden Başlat</string>
-    <string name="later_btn">Daha Sonra (Açmayın!)</string>
+    <string name="later_btn">Daha Sonra</string>
+    <string name="later_btn_format">Daha Sonra (%1$s telefon yeniden başlatılana kadar AÇMAYIN!!!)</string>
 
     <!-- Backup & Restore Sheet -->
     <string name="backup_restore_title">Sistem Yedeği ve Geri Yükleme</string>

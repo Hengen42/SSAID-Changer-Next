@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">SSAID Changer Next</string>
     <string name="app_subtitle">Rooted Android SSAID Editor</string>
-    <string name="version_format">v%1$s (Build %2$d)</string>
+    <string name="version_format">v%1$s</string>
+    <string name="root_status_ok">ROOT OK</string>
+    <string name="root_status_no">NO ROOT</string>
 
     <!-- Root Screen -->
     <string name="root_required_title">ROOT ACCESS REQUIRED</string>
@@ -25,7 +27,7 @@
     <string name="new_ssaid_label">New SSAID (16 Hex Characters)</string>
     <string name="randomize_btn">Randomize</string>
     <string name="reload_btn">Reload</string>
-    <string name="clear_data_checkbox">Also clear app data (Recommended for bank apps)</string>
+    <string name="clear_data_checkbox">Also clear app data (RECOMMENDED!!)</string>
     <string name="apply_spoofed_ssaid">APPLY SPOOFED SSAID</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
@@ -36,13 +38,15 @@
     <string name="tab_system_apps">System Apps</string>
     <string name="tab_all_apps">All</string>
     <string name="modified_badge">MODIFIED</string>
+    <string name="pull_to_refresh">Pull down to refresh apps</string>
 
     <!-- Restart Warning Dialog (Critical Tested Bug) -->
     <string name="restart_dialog_title">RESTART REQUIRED IMMEDIATELY!</string>
     <string name="restart_dialog_warning_bold">DO NOT OPEN THE TARGET APP BEFORE RESTARTING!</string>
-    <string name="restart_dialog_desc">The new SSAID has been written to the system database.\n\nCRITICAL WARNING: If you attempt to open the target app before rebooting your phone, Android will pass the old cached state, causing the bank to blacklist your NEW SSAID as well!\n\nYou MUST restart your device now.</string>
+    <string name="restart_dialog_desc">The new SSAID has been written to the system database.\n\nCRITICAL WARNING: If you attempt to open the target app before rebooting your phone, Android will pass the old cached state, causing the server to permanently blacklist your NEW SSAID as well!\n\nYou MUST restart your device now.</string>
     <string name="restart_now_btn">Restart Phone Now</string>
     <string name="later_btn">Later</string>
+    <string name="later_btn_format">Later (DO NOT open %1$s until phone is rebooted!!!)</string>
 
     <!-- Backup & Restore Sheet -->
     <string name="backup_restore_title">System Backup &amp; Restore</string>
