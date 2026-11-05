@@ -137,9 +137,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             AppItem(
                 packageName = appInfo.packageName,
                 appName = appInfo.loadLabel(pm).toString(),
-                uid = appInfo.uid,
                 isSystemApp = isSystem,
-                iconBitmap = null,
                 isModified = isMod
             )
         }.sortedWith(

@@ -58,7 +58,7 @@ android {
         }
     }
 
-    // Name the output APK as SSAID-Changer-Next-v1.3.0.apk
+    // Set dynamic output APK naming with version
     applicationVariants.all {
         outputs.all {
             val outputImpl = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl

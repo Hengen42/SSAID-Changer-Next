@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">SSAID Changer Next</string>
-    <string name="app_subtitle">Rooted Android SSAID Editor</string>
     <string name="version_format">v%1$s</string>
     <string name="root_status_ok">ROOT OK</string>
     <string name="root_status_no">NO ROOT</string>
@@ -9,13 +8,9 @@
     <string name="root_required_title">ROOT ACCESS REQUIRED</string>
     <string name="root_required_desc">SSAID Changer Next requires root access (KernelSU / Magisk / APatch) to inspect and modify Android SSAID system entries.</string>
     <string name="grant_root">GRANT ROOT ACCESS</string>
-    <string name="root_granted">Root access granted.</string>
     <string name="root_denied">Root permission denied or unavailable.</string>
 
     <!-- Main Screen -->
-    <string name="select_target_app">Select Target Application</string>
-    <string name="touch_to_pick">Touch here to pick an app</string>
-    <string name="empty_app_placeholder">Select an application to inspect or change its SSAID</string>
     <string name="current_active_ssaid">CURRENT ACTIVE SSAID</string>
     <string name="not_found_in_database">Not found in database</string>
     <string name="factory_original_id">FACTORY ORIGINAL ID</string>
@@ -45,7 +40,6 @@
     <string name="restart_dialog_warning_bold">DO NOT OPEN THE TARGET APP BEFORE RESTARTING!</string>
     <string name="restart_dialog_desc">The new SSAID has been written to the system database.\n\nCRITICAL WARNING: If you attempt to open the target app before rebooting your phone, Android will pass the old cached state, causing the server to permanently blacklist your NEW SSAID as well!\n\nYou MUST restart your device now.</string>
     <string name="restart_now_btn">Restart Phone Now</string>
-    <string name="later_btn">Later</string>
     <string name="later_btn_format">Later (DO NOT open %1$s until phone is rebooted!!!)</string>
 
     <!-- Backup & Restore Sheet -->

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">SSAID Changer Next</string>
-    <string name="app_subtitle">Rootlu Android SSAID Yöneticisi</string>
     <string name="version_format">v%1$s</string>
     <string name="root_status_ok">ROOT AKTİF</string>
     <string name="root_status_no">ROOT YOK</string>
@@ -9,13 +8,9 @@
     <string name="root_required_title">ROOT YETKİSİ GEREKLİ</string>
     <string name="root_required_desc">SSAID Changer Next, Android SSAID sistem girdilerini görüntülemek ve değiştirmek için root yetkisine (KernelSU / Magisk / APatch) ihtiyaç duyar.</string>
     <string name="grant_root">ROOT İZNİ VER</string>
-    <string name="root_granted">Root yetkisi sağlandı.</string>
     <string name="root_denied">Root yetkisi reddedildi veya bulunamadı.</string>
 
     <!-- Main Screen -->
-    <string name="select_target_app">Hedef Uygulamayı Seçin</string>
-    <string name="touch_to_pick">Uygulama seçmek için buraya dokunun</string>
-    <string name="empty_app_placeholder">SSAID kimliğini incelemek veya değiştirmek için bir uygulama seçin</string>
     <string name="current_active_ssaid">ŞU ANDA AKTİF SSAID</string>
     <string name="not_found_in_database">Veritabanında bulunamadı</string>
     <string name="factory_original_id">FABRİKA ORİJİNAL KİMLİĞİ</string>
@@ -45,7 +40,6 @@
     <string name="restart_dialog_warning_bold">YENİDEN BAŞLATMADAN ÖNCE HEDEF UYGULAMAYI KESİNLİKLE AÇMAYIN!</string>
     <string name="restart_dialog_desc">Yeni SSAID sistem veritabanına başarıyla yazıldı.\n\nKRİTİK UYARI: Telefonu yeniden başlatmadan önce hedef uygulamayı açmaya çalışırsanız, Android eski önbellek durumunu gönderecek ve YENİ ATANAN SSAID DE ANINDA SUNUCU TARAFINDAN KARA LİSTEYE ALINIP BANLANACAKTIR!\n\nLütfen cihazınızı şimdi yeniden başlatın.</string>
     <string name="restart_now_btn">Telefonu Hemen Yeniden Başlat</string>
-    <string name="later_btn">Daha Sonra</string>
     <string name="later_btn_format">Daha Sonra (%1$s telefon yeniden başlatılana kadar AÇMAYIN!!!)</string>
 
     <!-- Backup & Restore Sheet -->

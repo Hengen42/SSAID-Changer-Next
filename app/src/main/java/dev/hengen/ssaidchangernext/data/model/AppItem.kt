@@ -1,14 +1,9 @@
 package dev.hengen.ssaidchangernext.data.model
 
-import android.graphics.Bitmap
-
 data class AppItem(
     val packageName: String,
     val appName: String,
-    val uid: Int,
     val isSystemApp: Boolean,
-    val iconBitmap: Bitmap? = null,
-    val currentSsaid: String? = null,
     val isModified: Boolean = false
 )
 

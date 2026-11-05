@@ -228,11 +228,6 @@ ${'$'}NEW_LINE" "${'$'}TMP" > "${'$'}OUT"
         result.isSuccess
     }
 
-    suspend fun softReboot(): Boolean = withContext(Dispatchers.IO) {
-        val result = Shell.cmd("kill -9 $(pidof system_server) || setprop ctl.restart zygote").exec()
-        result.isSuccess
-    }
-
     suspend fun rebootDevice(): Boolean = withContext(Dispatchers.IO) {
         val result = Shell.cmd("/system/bin/reboot || svc power reboot || reboot").exec()
         result.isSuccess
