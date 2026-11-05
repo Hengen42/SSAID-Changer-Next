@@ -44,8 +44,7 @@ data class UiState(
     val selectedLanguage: String = "auto",
     val hasFullBackupFile: Boolean = false,
     val modifiedAppsCount: Int = 0,
-    val appVersion: String = "1.5.0",
-    val appBuild: Int = 150
+    val appVersion: String = "1.5.0"
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
