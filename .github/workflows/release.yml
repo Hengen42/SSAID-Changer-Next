@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build:
-    name: Build & Package SSAID Changer Next APK
+    name: Build & Release SSAID Changer Next APK
     runs-on: ubuntu-latest
 
     steps:
@@ -36,26 +36,18 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease --stacktrace --no-daemon
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SSAID-Changer-Next-Release-APK
-          path: app/build/outputs/apk/release/*.apk
-          retention-days: 14
-
       - name: Prepare Tag and Release Notes
         id: release_meta
         run: |
-          if [ -n "${GITHUB_REF_NAME}" ] && [[ "${GITHUB_REF_NAME}" == v* ]]; then
-            TAG="${GITHUB_REF_NAME}"
-          else
-            TAG="v1.4.0"
-          fi
+          # Automatically extract version from build.gradle.kts
+          APP_VER=$(grep "versionName = " app/build.gradle.kts | head -n 1 | cut -d'"' -f2 | tr -d '\r')
+          TAG="v${APP_VER:-1.4.0}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
+          # Extract release notes for this tag from CHANGELOG.md
           python3 -c "
           import sys, re
-          tag = '$TAG'.lstrip('v')
+          tag = '$APP_VER'
           try:
               with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
                   content = f.read()
@@ -68,12 +60,11 @@ jobs:
               if notes:
                   f.write(notes + '\n')
               else:
-                  f.write('Release $TAG\n')
+                  f.write('Release ' + '$TAG' + '\n')
           "
           cat release_notes.md
 
       - name: Upload to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_meta.outputs.tag }}

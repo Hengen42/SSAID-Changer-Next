@@ -69,4 +69,5 @@
     <string name="data_cleared_suffix"> (Uygulama verileri temizlendi)</string>
     <string name="restored_to_original_format">%1$s orijinal SSAID kimliğine döndürüldü (%2$s).</string>
     <string name="all_restored_success">Tüm orijinal SSAID kayıtları yedekten başarıyla geri yüklendi!</string>
+    <string name="same_ssaid_warning">Yeni SSAID mevcut kimlikle aynı! Lütfen önce \"Rastgele Üret\"e basın.</string>
 </resources>

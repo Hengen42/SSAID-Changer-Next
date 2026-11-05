@@ -36,8 +36,9 @@ Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim si
 
 ## ✨ Temel Özellikler
 
-- ⚡ **Işık Hızında Uygulama Seçimi:** 300'den fazla uygulamayı 20 milisaniyede donma olmadan listeler (Asenkron LruCache ile bellek optimizasyonu).
+- ⚡ **Işık Hızında Doğrudan Liste:** Uygulama açılır açılmaz yüklü tüm uygulamalar 20 milisaniyede donma olmadan karşınıza gelir (Asenkron LruCache ile bellek optimizasyonu).
 - 📌 **Değiştirilen Uygulamalar En Üstte:** SSAID kimliği değiştirilmiş uygulamalar listenin en tepesine `DEĞİŞTİRİLDİ` rozetiyle sabitlenir.
+- 🔄 **Aşağı Çekerek Yenileme (Pull-to-Refresh):** Yeni yüklenen uygulamaları hemen listelemek için listeyi aşağı kaydırmanız yeterlidir.
 - 🌐 **Uygulama İçi Dil Değiştirici:** İster sistem diliyle otomatik, ister Türkçe veya İngilizce olarak anında geçiş yapabilirsiniz.
 - 🛡️ **İki Kademeli Güvenli Yedekleme:**
   - **Uygulama Bazlı Orijinale Dönüş:** Her uygulamanın ilk fabrika kimliği saklanır; tek tıkla geri alınabilir.
@@ -48,10 +49,25 @@ Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim si
 
 ---
 
+## 📥 Kurulum ve Kullanım (Son Kullanıcı İçin)
+
+1. **İndirin:** En güncel `SSAID-Changer-Next-vX.X.X.apk` dosyasını doğrudan [Releases (Sürümler)](https://github.com/Hengen42/SSAID-Changer-Next/releases) sayfasından indirin.
+2. **Kurun ve Root Yetkisi Verin:** APK'yı yükleyip açın; KernelSU / Magisk / APatch root uyarısı verdiğinde onaylayın.
+3. **Hedef Uygulamayı Seçin:** Kimliğini değiştirmek istediğiniz uygulamaya dokunun.
+4. **Rastgele Üretip Uygulayın:** **Rastgele Üret** butonuna basın, "Uygulama verilerini de temizle" kutucuğunun seçili olduğundan emin olun ve **YENİ SSAID KİMLİĞİNİ UYGULA** deyin.
+5. **Telefonu Yeniden Başlatın:** Açılan pencereden **Telefonu Hemen Yeniden Başlat** butonuna basın. Telefon açıldığında hedef uygulamanıza artık sorunsuz giriş yapabilirsiniz!
+
+---
+
 ## ⚠️ Önemli Kullanım Uyarısı (Test Edilmiş Kritik Adım)
 
 > **DİKKAT:** Bir uygulamanın SSAID kimliğini değiştirdikten sonra **TELEFONU YENİDEN BAŞLATMADAN ÖNCE HEDEF UYGULAMAYI KESİNLİKLE AÇMAYIN!**  
-> Telefonu yeniden başlatmadan uygulamayı açarsanız, sistem henüz belleği sıfırlamadığı için yeni atadığınız SSAID de sunucu tarafından hemen tespit edilip kalıcı olarak banlanacaktır. Değişiklikten sonra önce telefonu yeniden başlatın (veya Hızlı Soft Reboot yapın), açıldıktan sonra hedef uygulamaya giriş yapın.
+> Telefonu yeniden başlatmadan uygulamayı açarsanız, sistem henüz belleği sıfırlamadığı için yeni atadığınız SSAID de sunucu tarafından hemen tespit edilip kalıcı olarak banlanacaktır. Değişiklikten sonra önce telefonu yeniden başlatın, açıldıktan sonra hedef uygulamaya giriş yapın.
+
+---
+
+## 🐛 Hata Bildirimi & Güncelleme Talepleri (GitHub Issues)
+Uygulamada bir hata ile karşılaştıysanız veya yeni bir özellik öneriniz varsa, [GitHub Issues (Sorun Bildirimi)](https://github.com/Hengen42/SSAID-Changer-Next/issues) sayfasında dilediğiniz gibi yeni bir konu açarak bize iletebilirsiniz! Topluluk geri bildirimleri memnuniyetle karşılanır ve düzenli olarak incelenir.
 
 ---
 
@@ -64,20 +80,14 @@ Orijinal Flutter uygulaması SSAID düzenleme fikrini ilk kez ortaya koymuş ols
 
 ---
 
-## 🛠️ Yerel Derleme
+## 🛠️ Kaynak Koddan Derleme (Geliştiriciler İçin)
 
 ```bash
-# Projeyi klonlayın
 git clone https://github.com/Hengen42/SSAID-Changer-Next.git
 cd SSAID-Changer-Next
-
-# Debug APK derleyin
-./gradlew assembleDebug
-
-# Release APK derleyin
 ./gradlew assembleRelease
 ```
-Üretilen APK konumu:
+Derlenen Release APK konumu:
 `app/build/outputs/apk/release/SSAID-Changer-Next-v1.4.0.apk`
 
 ---

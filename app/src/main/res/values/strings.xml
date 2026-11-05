@@ -69,4 +69,5 @@
     <string name="data_cleared_suffix"> (App data cleared)</string>
     <string name="restored_to_original_format">%1$s restored to original SSAID (%2$s).</string>
     <string name="all_restored_success">All original SSAID entries restored from backup!</string>
+    <string name="same_ssaid_warning">New SSAID is identical to the current one! Tap \"Randomize\" first.</string>
 </resources>

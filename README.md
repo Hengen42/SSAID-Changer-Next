@@ -34,8 +34,9 @@ Even after you hide root completely, reinstall the app, or wipe app caches, Andr
 ---
 
 ## ✨ Features
-- 🚀 **Instant, Zero-Lag App Picker:** Loads 300+ applications in under 20ms using on-demand asynchronous icon rendering (`LruCache`).
+- 🚀 **Instant, Zero-Lag App List:** Opens directly to your installed app list in under 20ms using on-demand asynchronous icon rendering (`LruCache`).
 - 📌 **Smart Modified Priority:** Applications whose SSAID has been modified are automatically pinned to the very top of the list with a neon `MODIFIED` badge.
+- 🔄 **Native Pull-to-Refresh:** Swipe down on the application list to instantly scan and detect newly installed applications.
 - 🌐 **Interactive In-App Language Selector:** Easily switch between System Default, Turkish, and English anytime without needing to restart the app.
 - 🛡️ **Two-Tier Backup &amp; Restore:**
   - **Per-App Restore:** Stores the original factory SSAID of any modified app; revert with a single tap.
@@ -46,10 +47,26 @@ Even after you hide root completely, reinstall the app, or wipe app caches, Andr
 
 ---
 
+## 📥 Installation & How to Use
+
+1. **Download:** Grab the latest `SSAID-Changer-Next-vX.X.X.apk` directly from the [Releases](https://github.com/Hengen42/SSAID-Changer-Next/releases) page.
+2. **Install & Grant Root:** Open the app and grant Superuser permission when prompted by KernelSU / Magisk / APatch.
+3. **Select Target App:** Tap on the application you want to modify.
+4. **Randomize & Apply:** Tap **Randomize** to generate a new 16-hex SSAID, ensure "Also clear app data" is checked, and tap **APPLY SPOOFED SSAID**.
+5. **Reboot Phone:** Tap **Restart Phone Now** and wait for your device to reboot. Once booted, launch your target app freely!
+
+---
+
 ## ⚠️ Important Usage Warning (Critical Tested Step)
 
 > **WARNING:** After applying a new SSAID, **DO NOT OPEN THE TARGET APPLICATION BEFORE RESTARTING YOUR PHONE!**  
-> If you launch the app before rebooting, Android will serve the stale in-memory cached state, causing the server to detect and permanently blacklist your newly assigned SSAID as well! Always reboot (or perform a soft reboot) first.
+> If you launch the app before rebooting, Android will serve the stale in-memory cached state, causing the server to detect and permanently blacklist your newly assigned SSAID as well! Always reboot your phone first.
+
+---
+
+## 🐛 Bug Reports & Feature Requests (GitHub Issues)
+Encountered a bug or have an idea to make SSAID Changer Next even better?  
+Feel free to open an issue or submit a feature request on our [GitHub Issues](https://github.com/Hengen42/SSAID-Changer-Next/issues) page! Community feedback is always welcome and actively reviewed.
 
 ---
 
@@ -62,26 +79,14 @@ While the original Flutter implementation introduced the idea of SSAID editing, 
 
 ---
 
-## 🛠️ Building & Installation
+## 🛠️ Build from Source (For Developers)
 
-### Requirements
-- Android 8.0+ (API 26+)
-- Root Access (KernelSU / Magisk / APatch)
-- JDK 17 & Android SDK
-
-### Build via Gradle
 ```bash
-# Clone the repository
 git clone https://github.com/Hengen42/SSAID-Changer-Next.git
 cd SSAID-Changer-Next
-
-# Build Debug APK
-./gradlew assembleDebug
-
-# Build Release APK
 ./gradlew assembleRelease
 ```
-The compiled APK will be at:
+The compiled release APK will be located at:
 `app/build/outputs/apk/release/SSAID-Changer-Next-v1.4.0.apk`
 
 ---

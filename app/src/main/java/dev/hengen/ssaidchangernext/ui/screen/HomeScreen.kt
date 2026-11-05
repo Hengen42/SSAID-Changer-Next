@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.util.LruCache
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +24,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -94,7 +92,7 @@ fun AsyncAppIcon(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel,
@@ -106,7 +104,6 @@ fun HomeScreen(
 
     var newIdInput by remember { mutableStateOf("") }
     var alsoClearData by remember { mutableStateOf(true) }
-    var showAppPicker by remember { mutableStateOf(false) }
     var showFullRestoreConfirmDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.currentSsaid) {
@@ -115,28 +112,18 @@ fun HomeScreen(
         }
     }
 
-    // BackHandler 1: If full-screen App Picker is open, back closes it
-    BackHandler(enabled = showAppPicker) {
-        showAppPicker = false
-    }
-
-    // BackHandler 2: If an app is selected on main screen, back clears selection first
-    BackHandler(enabled = !showAppPicker && state.selectedApp != null) {
+    // BackHandler: If an app is selected, pressing back returns to the main app list
+    BackHandler(enabled = state.selectedApp != null) {
         viewModel.clearSelectedApp()
     }
 
-    // If full-screen App Picker is requested, show full screen view
-    if (showAppPicker) {
-        FullScreenAppPicker(
-            viewModel = viewModel,
-            onBack = { showAppPicker = false },
-            onAppSelected = { app ->
-                viewModel.selectApp(app)
-                showAppPicker = false
-            }
-        )
-        return
-    }
+    // Pull to Refresh state for the main list
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = state.isRefreshingApps,
+        onRefresh = { viewModel.refreshApps() },
+        refreshThreshold = 60.dp,
+        refreshingOffset = 70.dp
+    )
 
     // Language Selection Dialog
     if (state.showLanguageDialog) {
@@ -200,7 +187,7 @@ fun HomeScreen(
         return
     }
 
-    // Critical Restart Required Dialog (With Framed Dynamic Warning Button)
+    // Critical Restart Required Dialog
     if (state.showRestartDialog) {
         val targetPkg = state.selectedApp?.packageName ?: ""
         AlertDialog(
@@ -270,7 +257,6 @@ fun HomeScreen(
                         Text(stringResource(R.string.restart_now_btn), fontWeight = FontWeight.Bold)
                     }
 
-                    // Framed Warning Dismiss Button
                     OutlinedButton(
                         onClick = { viewModel.dismissRestartDialog() },
                         border = androidx.compose.foundation.BorderStroke(1.dp, NextError.copy(alpha = 0.6f)),
@@ -354,63 +340,70 @@ fun HomeScreen(
         containerColor = NextBackground,
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = NextBackground
-                ),
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = NextBackground),
+                navigationIcon = {
+                    if (state.selectedApp != null) {
+                        IconButton(onClick = { viewModel.clearSelectedApp() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = NextAccent
+                            )
+                        }
+                    } else {
                         Image(
                             painter = painterResource(id = R.drawable.ic_app_logo),
                             contentDescription = "Logo",
                             modifier = Modifier
+                                .padding(start = 12.dp)
                                 .size(34.dp)
                                 .clip(RoundedCornerShape(8.dp))
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column(verticalArrangement = Arrangement.Center) {
-                            Text(
-                                text = stringResource(R.string.app_name),
-                                color = NextTextPrimary,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily.Monospace,
-                                maxLines = 1
+                    }
+                },
+                title = {
+                    Column(verticalArrangement = Arrangement.Center) {
+                        Text(
+                            text = if (state.selectedApp != null) state.selectedApp!!.appName else stringResource(R.string.app_name),
+                            color = NextTextPrimary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily.Monospace,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(if (state.hasRoot) NextSuccess else NextError)
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.dp)
-                                        .clip(CircleShape)
-                                        .background(if (state.hasRoot) NextSuccess else NextError)
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    text = if (state.hasRoot) stringResource(R.string.root_status_ok) else stringResource(R.string.root_status_no),
-                                    color = if (state.hasRoot) NextSuccess else NextError,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "•",
-                                    color = NextTextSecondary,
-                                    fontSize = 10.sp
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = stringResource(R.string.version_format, state.appVersion),
-                                    color = NextAccent,
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = if (state.hasRoot) stringResource(R.string.root_status_ok) else stringResource(R.string.root_status_no),
+                                color = if (state.hasRoot) NextSuccess else NextError,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "•",
+                                color = NextTextSecondary,
+                                fontSize = 10.sp
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.version_format, state.appVersion),
+                                color = NextAccent,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace
+                            )
                         }
                     }
                 },
                 actions = {
-                    // Language Picker Button
                     IconButton(onClick = { viewModel.setLanguageDialogVisible(true) }) {
                         Icon(
                             imageVector = Icons.Default.Language,
@@ -418,8 +411,6 @@ fun HomeScreen(
                             tint = NextAccent
                         )
                     }
-
-                    // Backup & Restore Sheet Button
                     IconButton(onClick = { viewModel.setBackupSheetVisible(true) }) {
                         Icon(
                             imageVector = Icons.Default.SettingsBackupRestore,
@@ -431,299 +422,358 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
         ) {
-            // Status Banner
-            state.statusMessage?.let { msg ->
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (state.statusIsError) NextError.copy(alpha = 0.15f) else NextSurfaceVariant
-                    ),
+            val selected = state.selectedApp
+
+            if (selected == null) {
+                // ==========================================
+                // 1. MAIN SCREEN IS DIRECTLY THE APP LIST!
+                // ==========================================
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 12.dp)
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
                 ) {
-                    Text(
-                        text = msg,
-                        color = if (state.statusIsError) NextError else NextTextSecondary,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(10.dp)
+                    // Search Bar
+                    OutlinedTextField(
+                        value = state.searchQuery,
+                        onValueChange = { viewModel.setSearchQuery(it) },
+                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NextAccent) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = NextAccent,
+                            unfocusedBorderColor = NextBorder
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                }
-            }
 
-            // Target App Selection Card
-            Card(
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = NextSurface),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showAppPicker = true }
-                    .border(1.dp, NextBorder, RoundedCornerShape(12.dp))
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val app = state.selectedApp
-                    if (app != null) {
-                        AsyncAppIcon(
-                            packageName = app.packageName,
-                            fallbackText = app.appName,
-                            modifier = Modifier
-                                .size(42.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Apps,
-                            contentDescription = null,
-                            tint = NextAccent,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = app?.appName ?: stringResource(R.string.select_target_app),
-                            color = NextTextPrimary,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = app?.packageName ?: stringResource(R.string.touch_to_pick),
-                            color = NextTextSecondary,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = null,
-                        tint = NextTextSecondary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Current SSAID Details Card
-            if (state.selectedApp != null) {
-                Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = NextSurface),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, NextBorder, RoundedCornerShape(12.dp))
-                ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stringResource(R.string.current_active_ssaid),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = NextTextSecondary
-                            )
-                            if (state.isLoadingSsaid) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(14.dp),
-                                    strokeWidth = 2.dp,
-                                    color = NextAccent
-                                )
-                            }
+                    // Filter Tabs (User / System / All)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterTabButton(stringResource(R.string.tab_user_apps), state.activeFilter == FilterType.USER) {
+                            viewModel.setFilterType(FilterType.USER)
                         }
+                        FilterTabButton(stringResource(R.string.tab_system_apps), state.activeFilter == FilterType.SYSTEM) {
+                            viewModel.setFilterType(FilterType.SYSTEM)
+                        }
+                        FilterTabButton(stringResource(R.string.tab_all_apps), state.activeFilter == FilterType.ALL) {
+                            viewModel.setFilterType(FilterType.ALL)
+                        }
+                    }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                        val displayId = state.currentSsaid ?: stringResource(R.string.not_found_in_database)
-                        Text(
-                            text = displayId,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            ),
-                            color = if (state.currentSsaid != null) NextAccent else NextWarning,
-                            modifier = Modifier.clickable {
-                                if (state.currentSsaid != null) {
-                                    clipboardManager.setText(AnnotatedString(state.currentSsaid!!))
-                                    Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                    // Pull-to-Refresh App List
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                    ) {
+                        PullRefreshIndicator(
+                            refreshing = state.isRefreshingApps,
+                            state = pullRefreshState,
+                            backgroundColor = NextSurfaceVariant,
+                            contentColor = NextAccent,
+                            scale = true,
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .zIndex(10f)
                         )
 
-                        // Per-App Restore Original Card
-                        if (state.originalSsaid != null && state.originalSsaid != state.currentSsaid) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = NextWarning.copy(alpha = 0.12f),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, NextWarning.copy(alpha = 0.35f)),
-                                modifier = Modifier.fillMaxWidth()
+                        if (state.isLoadingApps) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(color = NextAccent)
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = stringResource(R.string.factory_original_id),
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = NextWarning
-                                        )
-                                        Text(
-                                            text = state.originalSsaid!!,
-                                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                                            color = NextTextPrimary
-                                        )
-                                    }
-                                    Button(
-                                        onClick = { viewModel.restoreSelectedAppToOriginal(clearData = alsoClearData) },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = NextWarning,
-                                            contentColor = NextBackground
-                                        ),
-                                        shape = RoundedCornerShape(6.dp),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                        modifier = Modifier.height(32.dp)
-                                    ) {
-                                        Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(14.dp))
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(stringResource(R.string.restore_btn), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                    }
+                                items(state.filteredApps, key = { it.packageName }) { app ->
+                                    AppRow(app = app, onClick = { viewModel.selectApp(app) })
                                 }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // New SSAID Input
-                        OutlinedTextField(
-                            value = newIdInput,
-                            onValueChange = { input ->
-                                if (input.length <= 16 && input.all { it in "0123456789abcdefABCDEF" }) {
-                                    newIdInput = input.lowercase()
-                                }
-                            },
-                            label = { Text(stringResource(R.string.new_ssaid_label)) },
-                            singleLine = true,
-                            textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = NextAccent,
-                                unfocusedBorderColor = NextBorder,
-                                focusedLabelColor = NextAccent,
-                                cursorColor = NextAccent
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Single Full-Width Randomize Button (Clean!)
-                        OutlinedButton(
-                            onClick = { newIdInput = viewModel.getRandomSsaid() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(44.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = NextAccent),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, NextAccent)
-                        ) {
-                            Icon(Icons.Default.Casino, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.randomize_btn), fontWeight = FontWeight.Bold)
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Clear Data Checkbox (Simplified Text)
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { alsoClearData = !alsoClearData }
-                        ) {
-                            Checkbox(
-                                checked = alsoClearData,
-                                onCheckedChange = { alsoClearData = it },
-                                colors = CheckboxDefaults.colors(checkedColor = NextAccent)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(R.string.clear_data_checkbox),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = NextTextPrimary
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // Apply Button
-                        Button(
-                            onClick = {
-                                viewModel.updateSsaid(newIdInput, clearData = alsoClearData)
-                            },
-                            enabled = !state.isUpdatingSsaid && newIdInput.length == 16,
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = NextAccent,
-                                contentColor = NextBackground
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(46.dp)
-                        ) {
-                            if (state.isUpdatingSsaid) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    color = NextBackground,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Icon(Icons.Default.SecurityUpdateGood, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(stringResource(R.string.apply_spoofed_ssaid), fontWeight = FontWeight.Bold)
                             }
                         }
                     }
                 }
             } else {
-                Box(
+                // ==========================================
+                // 2. SELECTED APP DETAILS / SPOOF SCREEN
+                // ==========================================
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_app_logo),
-                            contentDescription = null,
+                    // Status Banner
+                    state.statusMessage?.let { msg ->
+                        Card(
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (state.statusIsError) NextError.copy(alpha = 0.15f) else NextSurfaceVariant
+                            ),
                             modifier = Modifier
-                                .size(72.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                        )
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Text(
-                            text = stringResource(R.string.empty_app_placeholder),
-                            color = NextTextSecondary,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp)
+                        ) {
+                            Text(
+                                text = msg,
+                                color = if (state.statusIsError) NextError else NextTextSecondary,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
+                    }
+
+                    // App Identity Card
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = NextSurface),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, NextBorder, RoundedCornerShape(12.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AsyncAppIcon(
+                                packageName = selected.packageName,
+                                fallbackText = selected.appName,
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = selected.appName,
+                                    color = NextTextPrimary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = selected.packageName,
+                                    color = NextTextSecondary,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // SSAID Editor Card
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = NextSurface),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, NextBorder, RoundedCornerShape(12.dp))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.current_active_ssaid),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = NextTextSecondary
+                                )
+                                if (state.isLoadingSsaid) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(14.dp),
+                                        strokeWidth = 2.dp,
+                                        color = NextAccent
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            val displayId = state.currentSsaid ?: stringResource(R.string.not_found_in_database)
+                            Text(
+                                text = displayId,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                ),
+                                color = if (state.currentSsaid != null) NextAccent else NextWarning,
+                                modifier = Modifier.clickable {
+                                    if (state.currentSsaid != null) {
+                                        clipboardManager.setText(AnnotatedString(state.currentSsaid!!))
+                                        Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            )
+
+                            // Per-App Restore Original Card
+                            if (state.originalSsaid != null && state.originalSsaid != state.currentSsaid) {
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = NextWarning.copy(alpha = 0.12f),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, NextWarning.copy(alpha = 0.35f)),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = stringResource(R.string.factory_original_id),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = NextWarning
+                                            )
+                                            Text(
+                                                text = state.originalSsaid!!,
+                                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                                color = NextTextPrimary
+                                            )
+                                        }
+                                        Button(
+                                            onClick = { viewModel.restoreSelectedAppToOriginal(clearData = alsoClearData) },
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = NextWarning,
+                                                contentColor = NextBackground
+                                            ),
+                                            shape = RoundedCornerShape(6.dp),
+                                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                            modifier = Modifier.height(32.dp)
+                                        ) {
+                                            Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(stringResource(R.string.restore_btn), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // New SSAID Input
+                            OutlinedTextField(
+                                value = newIdInput,
+                                onValueChange = { input ->
+                                    if (input.length <= 16 && input.all { it in "0123456789abcdefABCDEF" }) {
+                                        newIdInput = input.lowercase()
+                                    }
+                                },
+                                label = { Text(stringResource(R.string.new_ssaid_label)) },
+                                singleLine = true,
+                                textStyle = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = NextAccent,
+                                    unfocusedBorderColor = NextBorder,
+                                    focusedLabelColor = NextAccent,
+                                    cursorColor = NextAccent
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Green Themed Randomize Button (Prompt Requirement!)
+                            OutlinedButton(
+                                onClick = { newIdInput = viewModel.getRandomSsaid() },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = NextSuccess.copy(alpha = 0.08f),
+                                    contentColor = NextSuccess
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, NextSuccess)
+                            ) {
+                                Icon(Icons.Default.Casino, contentDescription = null, tint = NextSuccess, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(stringResource(R.string.randomize_btn), color = NextSuccess, fontWeight = FontWeight.Bold)
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Clear Data Checkbox
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { alsoClearData = !alsoClearData }
+                            ) {
+                                Checkbox(
+                                    checked = alsoClearData,
+                                    onCheckedChange = { alsoClearData = it },
+                                    colors = CheckboxDefaults.colors(checkedColor = NextAccent)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(R.string.clear_data_checkbox),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = NextTextPrimary
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(14.dp))
+
+                            // Apply Button with Strict Equality Validation!
+                            Button(
+                                onClick = {
+                                    val current = state.currentSsaid
+                                    val candidate = newIdInput.trim().lowercase()
+
+                                    // Strict check: If identical, warn and prevent execution!
+                                    if (current != null && candidate.equals(current.trim().lowercase(), ignoreCase = true)) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.same_ssaid_warning),
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        return@Button
+                                    }
+
+                                    viewModel.updateSsaid(candidate, clearData = alsoClearData)
+                                },
+                                enabled = !state.isUpdatingSsaid && newIdInput.length == 16,
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = NextAccent,
+                                    contentColor = NextBackground
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(46.dp)
+                            ) {
+                                if (state.isUpdatingSsaid) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = NextBackground,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Icon(Icons.Default.SecurityUpdateGood, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(stringResource(R.string.apply_spoofed_ssaid), fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -964,123 +1014,6 @@ fun RootRequiredScreen(
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(stringResource(R.string.reload_btn))
-            }
-        }
-    }
-}
-
-/**
- * FULL SCREEN App Picker Screen (No bottom sheet gesture conflicts, pure Pull-to-Refresh!)
- */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
-@Composable
-fun FullScreenAppPicker(
-    viewModel: MainViewModel,
-    onBack: () -> Unit,
-    onAppSelected: (AppItem) -> Unit
-) {
-    val state by viewModel.uiState.collectAsState()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = state.isRefreshingApps,
-        onRefresh = { viewModel.refreshApps() },
-        refreshThreshold = 65.dp,
-        refreshingOffset = 75.dp
-    )
-
-    Scaffold(
-        containerColor = NextBackground,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = NextBackground),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = NextAccent
-                        )
-                    }
-                },
-                title = {
-                    Text(
-                        text = stringResource(R.string.choose_application),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = NextTextPrimary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-        ) {
-            // Search Bar
-            OutlinedTextField(
-                value = state.searchQuery,
-                onValueChange = { viewModel.setSearchQuery(it) },
-                placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = NextAccent) },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = NextAccent,
-                    unfocusedBorderColor = NextBorder
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Filter Tabs (User / System / All)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterTabButton(stringResource(R.string.tab_user_apps), state.activeFilter == FilterType.USER) {
-                    viewModel.setFilterType(FilterType.USER)
-                }
-                FilterTabButton(stringResource(R.string.tab_system_apps), state.activeFilter == FilterType.SYSTEM) {
-                    viewModel.setFilterType(FilterType.SYSTEM)
-                }
-                FilterTabButton(stringResource(R.string.tab_all_apps), state.activeFilter == FilterType.ALL) {
-                    viewModel.setFilterType(FilterType.ALL)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Pure Full-Screen Pull-to-Refresh Container
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(pullRefreshState)
-            ) {
-                // Highly visible top-center indicator
-                PullRefreshIndicator(
-                    refreshing = state.isRefreshingApps,
-                    state = pullRefreshState,
-                    backgroundColor = NextSurfaceVariant,
-                    contentColor = NextAccent,
-                    scale = true,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .zIndex(10f)
-                )
-
-                if (state.isLoadingApps) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = NextAccent)
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(state.filteredApps, key = { it.packageName }) { app ->
-                            AppRow(app = app, onClick = { onAppSelected(app) })
-                        }
-                    }
-                }
             }
         }
     }
