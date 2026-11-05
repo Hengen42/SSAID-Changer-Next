@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0
+- **Direct Application List Landing:** Completely redesigned the main screen to launch immediately into the installed app list with integrated top-bar actions, eliminating the empty placeholder card.
+- **Neon "Randomize" Action:** Restyled the Randomize button with a full-width vibrant neon green accent for enhanced usability and prominence.
+- **Duplicate SSAID Guard:** Added equality validation on apply; prevents accidental re-application when candidate SSAID matches the active SSAID and warns the user.
+- **Automated GitHub Releases Workflow:** Pushing to the main branch automatically builds and publishes a GitHub Release with prebuilt APKs attached, eliminating manual release steps.
+- **Contributing & Pull Requests:** Added open-source contribution guidelines (Pull Requests) and issue reporting sections to project documentation.
+- **Streamlined Documentation:** Polished bilingual README files to focus on end-user APK installation and removed obsolete soft reboot references.
+
 ## 1.4.0
 - **Full-Screen App Picker:** Converted bottom sheet to an immersive full-screen view with a back arrow, completely eliminating gesture conflicts with pull-to-refresh.
 - **Native Pull-to-Refresh:** Added ultra-fast pull-to-refresh with visible neon indicator on the application picker to instantly detect newly installed apps.

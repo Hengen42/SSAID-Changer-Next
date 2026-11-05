@@ -66,6 +66,19 @@ Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim si
 
 ---
 
+## 🤝 Katkıda Bulunma (Pull Request - PR)
+SSAID Changer Next açık kaynaklı bir topluluk projesidir. Projeye katkıda bulunmak, yeni bir özellik eklemek veya bir hatayı düzeltmek isterseniz Pull Request (PR) gönderebilirsiniz:
+
+1. Bu depoyu (repository) Fork'layın (sağ üstteki **Fork** butonuna basın).
+2. Yeni bir özellik veya düzeltme dalı oluşturun: `git checkout -b ozellik/yeni-ozellik`
+3. Değişikliklerinizi yapıp commit'leyin: `git commit -m "Harika bir özellik eklendi"`
+4. Dalınızı uzak sunucunuza gönderin: `git push origin ozellik/yeni-ozellik`
+5. GitHub üzerinden bir **Pull Request (PR)** açın!
+
+Tüm Pull Request'ler memnuniyetle incelenir ve projeye dahil edilir.
+
+---
+
 ## 🐛 Hata Bildirimi & Güncelleme Talepleri (GitHub Issues)
 Uygulamada bir hata ile karşılaştıysanız veya yeni bir özellik öneriniz varsa, [GitHub Issues (Sorun Bildirimi)](https://github.com/Hengen42/SSAID-Changer-Next/issues) sayfasında dilediğiniz gibi yeni bir konu açarak bize iletebilirsiniz! Topluluk geri bildirimleri memnuniyetle karşılanır ve düzenli olarak incelenir.
 
@@ -88,7 +101,7 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 Derlenen Release APK konumu:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.4.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.5.0.apk`
 
 ---
 

@@ -64,6 +64,19 @@ Even after you hide root completely, reinstall the app, or wipe app caches, Andr
 
 ---
 
+## 🤝 Contributing (Pull Requests)
+SSAID Changer Next is an open-source project and welcomes all community contributions! Whether you want to add a new feature, optimize performance, or fix a bug:
+
+1. Fork this repository (click the **Fork** button at the top right).
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m "Add amazing feature"`
+4. Push to your branch: `git push origin feature/amazing-feature`
+5. Open a **Pull Request (PR)** on GitHub!
+
+All pull requests are actively reviewed and merged.
+
+---
+
 ## 🐛 Bug Reports & Feature Requests (GitHub Issues)
 Encountered a bug or have an idea to make SSAID Changer Next even better?  
 Feel free to open an issue or submit a feature request on our [GitHub Issues](https://github.com/Hengen42/SSAID-Changer-Next/issues) page! Community feedback is always welcome and actively reviewed.
@@ -87,7 +100,7 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 The compiled release APK will be located at:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.4.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.5.0.apk`
 
 ---
 

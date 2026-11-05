@@ -41,7 +41,7 @@ jobs:
         run: |
           # Automatically extract version from build.gradle.kts
           APP_VER=$(grep "versionName = " app/build.gradle.kts | head -n 1 | cut -d'"' -f2 | tr -d '\r')
-          TAG="v${APP_VER:-1.4.0}"
+          TAG="v${APP_VER:-1.5.0}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
           # Extract release notes for this tag from CHANGELOG.md
