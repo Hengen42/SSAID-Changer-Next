@@ -4,6 +4,16 @@
     <string name="root_status_ok">ROOT AKTİF</string>
     <string name="root_status_no">ROOT YOK</string>
 
+    <!-- GitHub Updates -->
+    <string name="update_check">Güncellemeleri kontrol et</string>
+    <string name="update_available_title">Yeni güncelleme mevcut</string>
+    <string name="update_available_message">Yüklü sürüm: v%1$s\nYeni sürüm: v%2$s\n\nGüncellemeyi indirmek için GitHub sürüm sayfasını açmak ister misiniz?</string>
+    <string name="update_open_github">GitHub’da aç</string>
+    <string name="update_later">Daha sonra</string>
+    <string name="update_up_to_date">En güncel sürümü kullanıyorsunuz.</string>
+    <string name="update_check_failed">Güncellemeler kontrol edilemedi. İnternet bağlantınızı kontrol edip daha sonra tekrar deneyin.</string>
+    <string name="update_open_failed">Sürüm sayfası açılamadı. Bir tarayıcı yükleyip veya etkinleştirip tekrar deneyin.</string>
+
     <!-- Root Screen -->
     <string name="root_required_title">ROOT YETKİSİ GEREKLİ</string>
     <string name="root_required_desc">SSAID Changer Next, Android SSAID sistem girdilerini görüntülemek ve değiştirmek için root yetkisine (KernelSU / Magisk / APatch) ihtiyaç duyar.</string>

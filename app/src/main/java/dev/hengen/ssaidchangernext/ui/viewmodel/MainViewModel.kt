@@ -7,6 +7,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.Shell
 import dev.hengen.ssaidchangernext.R
+import dev.hengen.ssaidchangernext.BuildConfig
+import dev.hengen.ssaidchangernext.data.update.AppRelease
+import dev.hengen.ssaidchangernext.data.update.GitHubUpdateChecker
+import kotlinx.coroutines.CancellationException
 import dev.hengen.ssaidchangernext.data.model.AppItem
 import dev.hengen.ssaidchangernext.data.model.SsaidResult
 import dev.hengen.ssaidchangernext.data.preferences.AppPreferences
@@ -15,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,7 +49,10 @@ data class UiState(
     val selectedLanguage: String = "auto",
     val hasFullBackupFile: Boolean = false,
     val modifiedAppsCount: Int = 0,
-    val appVersion: String = "1.5.0"
+    val appVersion: String = BuildConfig.VERSION_NAME,
+    val isCheckingUpdate: Boolean = false,
+    val availableUpdate: AppRelease? = null,
+    val updateMessageRes: Int? = null
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -58,6 +66,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             selectedLanguage = prefs.getLanguagePreference()
         )
         checkRootAndLoad(forceFresh = false)
+        checkForUpdates(manual = false)
+    }
+
+    fun checkForUpdates(manual: Boolean = true) {
+        if (_uiState.value.isCheckingUpdate) return
+        _uiState.value = _uiState.value.copy(isCheckingUpdate = true, updateMessageRes = null)
+        viewModelScope.launch {
+            try {
+                val release = GitHubUpdateChecker.findUpdate(BuildConfig.VERSION_NAME)
+                _uiState.value = _uiState.value.copy(
+                    availableUpdate = release,
+                    updateMessageRes = if (manual && release == null) R.string.update_up_to_date else null
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (manual) {
+                    _uiState.value = _uiState.value.copy(updateMessageRes = R.string.update_check_failed)
+                }
+            } finally {
+                _uiState.value = _uiState.value.copy(isCheckingUpdate = false)
+            }
+        }
+    }
+
+    fun dismissUpdate() {
+        _uiState.value = _uiState.value.copy(availableUpdate = null)
+    }
+
+    fun clearUpdateMessage() {
+        _uiState.value = _uiState.value.copy(updateMessageRes = null)
     }
 
     fun requestRoot() {
@@ -145,7 +184,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .thenBy { it.appName.lowercase() }
         )
 
-        _uiState.value = _uiState.value.copy(allApps = apps)
+        _uiState.update { it.copy(allApps = apps) }
     }
 
     fun setSearchQuery(query: String) {

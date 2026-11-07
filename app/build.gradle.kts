@@ -11,8 +11,8 @@ android {
         applicationId = "dev.hengen.ssaidchangernext"
         minSdk = 26
         targetSdk = 34
-        versionCode = 150
-        versionName = "1.5.0"
+        versionCode = 160
+        versionName = "1.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -46,6 +46,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -68,6 +69,8 @@ android {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20240303")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")

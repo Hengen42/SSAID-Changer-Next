@@ -1,5 +1,8 @@
 package dev.hengen.ssaidchangernext.ui.screen
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.graphics.Bitmap
 import android.util.LruCache
 import android.widget.Toast
@@ -102,10 +105,45 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
-
     var newIdInput by remember { mutableStateOf("") }
     var alsoClearData by remember { mutableStateOf(true) }
     var showFullRestoreConfirmDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.updateMessageRes) {
+        state.updateMessageRes?.let {
+            Toast.makeText(context, context.getString(it), Toast.LENGTH_LONG).show()
+            viewModel.clearUpdateMessage()
+        }
+    }
+
+    val update = state.availableUpdate
+    if (update != null && !state.isCheckingRoot && !state.showRestartDialog &&
+        !state.isUpdatingSsaid && !state.showLanguageDialog && !state.showBackupSheet &&
+        !showFullRestoreConfirmDialog) {
+        // The release page lets the user review notes and choose the APK to download.
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissUpdate() },
+            containerColor = NextSurface,
+            icon = { Icon(Icons.Default.SystemUpdate, contentDescription = null, tint = NextAccent) },
+            title = { Text(stringResource(R.string.update_available_title)) },
+            text = { Text(stringResource(R.string.update_available_message, state.appVersion, update.version)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(update.pageUrl)))
+                        viewModel.dismissUpdate()
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
+                    }
+                }) { Text(stringResource(R.string.update_open_github)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.dismissUpdate() }) {
+                    Text(stringResource(R.string.update_later))
+                }
+            }
+        )
+    }
 
     LaunchedEffect(state.currentSsaid) {
         if (state.currentSsaid != null) {
@@ -183,6 +221,8 @@ fun HomeScreen(
             isChecking = state.isCheckingRoot,
             onRequestRoot = { viewModel.requestRoot() },
             onCheckAgain = { viewModel.checkRootAndLoad(forceFresh = true) },
+            isCheckingUpdate = state.isCheckingUpdate,
+            onCheckUpdate = { viewModel.checkForUpdates() },
             onLanguageClick = { viewModel.setLanguageDialogVisible(true) }
         )
         return
@@ -405,6 +445,7 @@ fun HomeScreen(
                     }
                 },
                 actions = {
+                    UpdateCheckButton(state.isCheckingUpdate) { viewModel.checkForUpdates() }
                     IconButton(onClick = { viewModel.setLanguageDialogVisible(true) }) {
                         Icon(
                             imageVector = Icons.Default.Language,
@@ -922,6 +963,8 @@ fun RootRequiredScreen(
     isChecking: Boolean,
     onRequestRoot: () -> Unit,
     onCheckAgain: () -> Unit,
+    isCheckingUpdate: Boolean,
+    onCheckUpdate: () -> Unit,
     onLanguageClick: () -> Unit
 ) {
     Box(
@@ -930,6 +973,9 @@ fun RootRequiredScreen(
             .background(NextBackground)
             .padding(24.dp)
     ) {
+        Box(modifier = Modifier.align(Alignment.TopStart)) {
+            UpdateCheckButton(isCheckingUpdate, onCheckUpdate)
+        }
         IconButton(
             onClick = onLanguageClick,
             modifier = Modifier.align(Alignment.TopEnd)
@@ -1016,6 +1062,23 @@ fun RootRequiredScreen(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(stringResource(R.string.reload_btn))
             }
+        }
+    }
+}
+
+@Composable
+private fun UpdateCheckButton(isChecking: Boolean, onClick: () -> Unit) {
+    IconButton(onClick = onClick, enabled = !isChecking) {
+        if (isChecking) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp), color = NextAccent, strokeWidth = 2.dp
+            )
+        } else {
+            Icon(
+                Icons.Default.SystemUpdate,
+                contentDescription = stringResource(R.string.update_check),
+                tint = NextAccent
+            )
         }
     }
 }

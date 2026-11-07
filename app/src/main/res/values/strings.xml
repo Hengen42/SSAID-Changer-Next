@@ -4,6 +4,16 @@
     <string name="root_status_ok">ROOT OK</string>
     <string name="root_status_no">NO ROOT</string>
 
+    <!-- GitHub Updates -->
+    <string name="update_check">Check for updates</string>
+    <string name="update_available_title">Update available</string>
+    <string name="update_available_message">Installed version: v%1$s\nNew version: v%2$s\n\nWould you like to open the GitHub release page to download the update?</string>
+    <string name="update_open_github">Open on GitHub</string>
+    <string name="update_later">Later</string>
+    <string name="update_up_to_date">You are using the latest version.</string>
+    <string name="update_check_failed">Could not check for updates. Check your internet connection and try again later.</string>
+    <string name="update_open_failed">Could not open the release page. Install or enable a browser and try again.</string>
+
     <!-- Root Screen -->
     <string name="root_required_title">ROOT ACCESS REQUIRED</string>
     <string name="root_required_desc">SSAID Changer Next requires root access (KernelSU / Magisk / APatch) to inspect and modify Android SSAID system entries.</string>

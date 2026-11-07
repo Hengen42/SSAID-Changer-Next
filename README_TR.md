@@ -36,6 +36,8 @@ Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim si
 
 ## ✨ Temel Özellikler
 
+- 🔔 **Uygulama İçi Güncelleme Kontrolü:** Açılışta GitHub üzerinden daha yeni bir kararlı sürüm olup olmadığını otomatik kontrol eder. Güncelleme simgesinden elle kontrol de yapılabilir; yeni sürüm varsa GitHub sürüm sayfasını açmayı veya ertelemeyi seçebilirsiniz. Güncelleme kontrolü root izni gerektirmez.
+
 - ⚡ **Işık Hızında Doğrudan Liste:** Uygulama açılır açılmaz yüklü tüm uygulamalar 20 milisaniyede donma olmadan karşınıza gelir (Asenkron LruCache ile bellek optimizasyonu).
 - 📌 **Değiştirilen Uygulamalar En Üstte:** SSAID kimliği değiştirilmiş uygulamalar listenin en tepesine `DEĞİŞTİRİLDİ` rozetiyle sabitlenir.
 - 🔄 **Aşağı Çekerek Yenileme (Pull-to-Refresh):** Yeni yüklenen uygulamaları hemen listelemek için listeyi aşağı kaydırmanız yeterlidir.
@@ -101,7 +103,7 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 Derlenen Release APK konumu:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.5.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.0.apk`
 
 ---
 

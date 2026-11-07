@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+- **In-App Update Checks:** Check GitHub for the latest stable release automatically at startup or manually from the update button, including without root access.
+- **Update Prompt:** Show installed and available versions and ask before opening the GitHub release page; users can postpone the update.
+- **Localized Feedback:** Added Turkish and English update messages; automatic checks stay silent when offline or already up to date.
+- **Version Consistency:** Read the displayed and compared app version directly from the build configuration.
+
 ## 1.5.0
 - **Direct Application List Landing:** Completely redesigned the main screen to launch immediately into the installed app list with integrated top-bar actions, eliminating the empty placeholder card.
 - **Neon "Randomize" Action:** Restyled the Randomize button with a full-width vibrant neon green accent for enhanced usability and prominence.

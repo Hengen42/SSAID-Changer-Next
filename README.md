@@ -34,6 +34,7 @@ Even after you hide root completely, reinstall the app, or wipe app caches, Andr
 ---
 
 ## ✨ Features
+- 🔔 **In-App Update Checks:** Automatically checks GitHub for a newer stable release at startup. Use the update icon to check manually; when an update is available, choose to open its GitHub release page or postpone it. No root access is required for update checks.
 - 🚀 **Instant, Zero-Lag App List:** Opens directly to your installed app list in under 20ms using on-demand asynchronous icon rendering (`LruCache`).
 - 📌 **Smart Modified Priority:** Applications whose SSAID has been modified are automatically pinned to the very top of the list with a neon `MODIFIED` badge.
 - 🔄 **Native Pull-to-Refresh:** Swipe down on the application list to instantly scan and detect newly installed applications.
@@ -100,7 +101,7 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 The compiled release APK will be located at:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.5.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.0.apk`
 
 ---
 
