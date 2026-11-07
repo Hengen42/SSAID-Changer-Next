@@ -2,7 +2,7 @@
 
 ## 1.6.1
 - **Permanent Release Signing:** Local and GitHub release builds now use the same dedicated release key. Builds fail if signing credentials are missing.
-- **Verified Release Assets:** GitHub checks the signing certificate before publishing and includes APK SHA-256 checksums and the public certificate fingerprint.
+- **Verified Release APK:** GitHub checks the signing certificate before publishing. Only the installable APK is attached to releases.
 - **One-Time Signing Transition:** Versions up to 1.6.0 used debug signing. Preserve saved original SSAIDs before uninstalling an old version to install 1.6.1; uninstalling clears per-app original SSAID records. Future releases will retain the new signing identity.
 - **Play Protect:** Consistent release signing does not guarantee removal of Google's unknown-developer warnings.
 

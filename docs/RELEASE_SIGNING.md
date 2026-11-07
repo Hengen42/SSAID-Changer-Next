@@ -32,8 +32,9 @@ Repository Actions secrets:
 
 Repository Actions variable `RELEASE_CERT_SHA256` contains the public certificate's
 SHA-256 fingerprint (lowercase hex, without colons). The workflow verifies every
-release APK against it before publishing. The public fingerprint is also published
-in `docs/release-certificate.sha256`. Every APK has a `.sha256` checksum asset.
+release APK against it before publishing. The public fingerprint is kept in the
+repository at `docs/release-certificate.sha256` for developers. Only the APK is
+attached to GitHub releases so users have one installation file to choose.
 
 ## Moving from v1.6.0 and older
 
