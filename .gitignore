@@ -53,6 +53,9 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+*.p12
+signing.properties
+keystore.properties
 
 # External native build folder
 .externalNativeBuild

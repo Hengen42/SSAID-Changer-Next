@@ -34,7 +34,35 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace --no-daemon
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          : "${RELEASE_KEYSTORE_BASE64:?Release keystore secret is missing}"
+          : "${RELEASE_STORE_PASSWORD:?Release password secret is missing}"
+          : "${RELEASE_KEY_ALIAS:?Release alias secret is missing}"
+          export RELEASE_STORE_FILE="$RUNNER_TEMP/ssaid-release.p12"
+          trap 'rm -f "$RELEASE_STORE_FILE"' EXIT
+          umask 077
+          printf '%s' "$RELEASE_KEYSTORE_BASE64" | base64 --decode > "$RELEASE_STORE_FILE"
+          ./gradlew testDebugUnitTest lintDebug assembleRelease --stacktrace --no-daemon
+
+      - name: Verify release signature and generate checksum
+        env:
+          RELEASE_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          : "${RELEASE_CERT_SHA256:?Release certificate fingerprint variable is missing}"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
+          for apk in app/build/outputs/apk/release/*.apk; do
+            "$APKSIGNER" verify --verbose --print-certs "$apk" | tee "$RUNNER_TEMP/apk-certificate.txt"
+            ACTUAL="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/apk-certificate.txt")"
+            test "$ACTUAL" = "$RELEASE_CERT_SHA256"
+            (cd "$(dirname "$apk")" && sha256sum "$(basename "$apk")" > "$(basename "$apk").sha256")
+          done
 
       - name: Prepare Tag and Release Notes
         id: release_meta
@@ -71,4 +99,7 @@ jobs:
           name: SSAID Changer Next ${{ steps.release_meta.outputs.tag }}
           body_path: release_notes.md
           generate_release_notes: true
-          files: app/build/outputs/apk/release/*.apk
+          files: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/release/*.apk.sha256
+            docs/release-certificate.sha256

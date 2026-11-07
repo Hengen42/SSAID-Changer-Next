@@ -1,7 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val releaseSigningProperties = Properties().apply {
+    val configFile = File(System.getProperty("user.home"), ".android/ssaid-changer-next-release/signing.properties")
+    if (configFile.isFile) configFile.inputStream().use { load(it) }
+}
+fun releaseSigningValue(environmentName: String, propertyName: String): String? =
+    System.getenv(environmentName)?.takeIf { it.isNotBlank() }
+        ?: releaseSigningProperties.getProperty(propertyName)?.takeIf { it.isNotBlank() }
+
+val releaseStoreFile = releaseSigningValue("RELEASE_STORE_FILE", "storeFile")
+val releaseStorePassword = releaseSigningValue("RELEASE_STORE_PASSWORD", "storePassword")
+val releaseKeyAlias = releaseSigningValue("RELEASE_KEY_ALIAS", "keyAlias")
+val releaseKeyPassword = releaseSigningValue("RELEASE_KEY_PASSWORD", "keyPassword")
 
 android {
     namespace = "dev.hengen.ssaidchangernext"
@@ -11,8 +26,8 @@ android {
         applicationId = "dev.hengen.ssaidchangernext"
         minSdk = 26
         targetSdk = 34
-        versionCode = 160
-        versionName = "1.6.0"
+        versionCode = 161
+        versionName = "1.6.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -20,11 +35,19 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = releaseStoreFile?.let { file(it) }
+            storePassword = releaseStorePassword
+            keyAlias = releaseKeyAlias
+            keyPassword = releaseKeyPassword
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Use debug signing for instant installability of GitHub release APKs
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -66,6 +89,19 @@ android {
             outputImpl?.outputFileName = "SSAID-Changer-Next-v${defaultConfig.versionName}.apk"
         }
     }
+}
+
+val validateReleaseSigning by tasks.registering {
+    doLast {
+        check(listOf(releaseStoreFile, releaseStorePassword, releaseKeyAlias, releaseKeyPassword)
+            .all { !it.isNullOrBlank() }) {
+            "Release signing is required. See docs/RELEASE_SIGNING.md. Debug builds do not need release credentials."
+        }
+        check(file(releaseStoreFile!!).isFile) { "Release keystore not found. See docs/RELEASE_SIGNING.md." }
+    }
+}
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    dependsOn(validateReleaseSigning)
 }
 
 dependencies {

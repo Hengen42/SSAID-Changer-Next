@@ -50,6 +50,12 @@ Even after you hide root completely, reinstall the app, or wipe app caches, Andr
 
 ## 📥 Installation & How to Use
 
+**Upgrading from v1.6.0 or earlier:** v1.6.1 introduces a permanent release signing key.
+An old debug-signed installation may require a one-time uninstall. **Record saved
+original SSAIDs before uninstalling**, because uninstalling deletes per-app restore
+records. See [release signing and migration](docs/RELEASE_SIGNING.md).
+Permanent signing does not guarantee that Google Play Protect warnings disappear.
+
 1. **Download:** Grab the latest `SSAID-Changer-Next-vX.X.X.apk` directly from the [Releases](https://github.com/Hengen42/SSAID-Changer-Next/releases) page.
 2. **Install & Grant Root:** Open the app and grant Superuser permission when prompted by KernelSU / Magisk / APatch.
 3. **Select Target App:** Tap on the application you want to modify.
@@ -101,7 +107,10 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 The compiled release APK will be located at:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.1.apk`
+
+Release builds require the permanent signing key; see [release signing](docs/RELEASE_SIGNING.md).
+For development without signing credentials, use `./gradlew assembleDebug`.
 
 ---
 

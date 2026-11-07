@@ -53,6 +53,12 @@ Sonradan root gizlense veya uygulama yeniden yüklense dahi, Android işletim si
 
 ## 📥 Kurulum ve Kullanım (Son Kullanıcı İçin)
 
+**v1.6.0 ve öncesinden geçiş:** v1.6.1 ile kalıcı release imzasına geçilmiştir.
+Eski debug imzalı kurulumun bir defalığına kaldırılması gerekebilir. **Kaldırmadan
+önce kayıtlı orijinal SSAID değerlerini not edin**; uygulamayı kaldırmak uygulama
+bazlı geri yükleme kayıtlarını siler. Ayrıntılar: [imzalama ve geçiş rehberi](docs/RELEASE_SIGNING.md).
+Kalıcı imza, Google Play Protect uyarılarının kalkacağını garanti etmez.
+
 1. **İndirin:** En güncel `SSAID-Changer-Next-vX.X.X.apk` dosyasını doğrudan [Releases (Sürümler)](https://github.com/Hengen42/SSAID-Changer-Next/releases) sayfasından indirin.
 2. **Kurun ve Root Yetkisi Verin:** APK'yı yükleyip açın; KernelSU / Magisk / APatch root uyarısı verdiğinde onaylayın.
 3. **Hedef Uygulamayı Seçin:** Kimliğini değiştirmek istediğiniz uygulamaya dokunun.
@@ -103,7 +109,10 @@ cd SSAID-Changer-Next
 ./gradlew assembleRelease
 ```
 Derlenen Release APK konumu:
-`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.0.apk`
+`app/build/outputs/apk/release/SSAID-Changer-Next-v1.6.1.apk`
+
+Release derlemesi kalıcı imzalama anahtarı gerektirir; [imzalama rehberine](docs/RELEASE_SIGNING.md) bakın.
+İmzalama bilgileri olmadan geliştirme için `./gradlew assembleDebug` kullanabilirsiniz.
 
 ---
 
