@@ -59,7 +59,7 @@ jobs:
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
           for apk in app/build/outputs/apk/release/*.apk; do
             "$APKSIGNER" verify --verbose --print-certs "$apk" | tee "$RUNNER_TEMP/apk-certificate.txt"
-            ACTUAL="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/apk-certificate.txt")"
+            ACTUAL="$(sed -n 's/^.*certificate SHA-256 digest: //p' "$RUNNER_TEMP/apk-certificate.txt" | sort -u)"
             test "$ACTUAL" = "$RELEASE_CERT_SHA256"
             (cd "$(dirname "$apk")" && sha256sum "$(basename "$apk")" > "$(basename "$apk").sha256")
           done
