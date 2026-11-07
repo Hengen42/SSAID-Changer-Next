@@ -135,7 +135,13 @@ fun HomeScreen(
                     } catch (e: ActivityNotFoundException) {
                         Toast.makeText(context, R.string.update_open_failed, Toast.LENGTH_LONG).show()
                     }
-                }) { Text(stringResource(R.string.update_open_github)) }
+                }) {
+                    Text(
+                        stringResource(R.string.update_open_github),
+                        color = NextSuccess,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.dismissUpdate() }) {
